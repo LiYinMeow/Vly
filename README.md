@@ -31,12 +31,21 @@ Any android phone which can run ARCore.
 
 ## Build 构建
 First, you need download Live2D SDK and decompress to project root(`Framework` and `Core` directory is needed).  
+Just clone https://github.com/Live2D/CubismNativeSamples and copy `Framework` `Core` and `Samples/OpenGL` to project root.  
 Then you can build it as normal.  
 This repo also contains CI support, you can fork this repo and enable CI for this to auto build Vly.
 
 首先您需要下载 Live2D SDK 并将其解压缩到项目根目录（需要 `Framework` 和 `Core` 目录）。  
+只需要克隆 https://github.com/Live2D/CubismNativeSamples 项目并复制 `Framework` `Core` 和 `Samples/OpenGL` 文件夹到项目根目录。  
 然后您就可以像其他软件一样编译它。  
 这个仓库同时具有 CI 支持，您可以 fork 这个仓库，然后启动 CI 来自动编译 Vly。
+
+### Use INTERNAL model 使用内置模型功能
+Just put your fbx file into `app/sampledata/models` and rename it to `internal.fbx`   
+只需要将你的 fbx 文件放入 `app/sampledata/models` 然后重命名为 `internal.fbx`   
+
+To use INTERNAL model, long click add model button.  
+要使用内置模型，长按添加模型按钮。  
 
 ## License 协议
 This project is licensed under MIT Open Source License, expect `Framework` `Core` `OpenGL` and `app\src\main\cpp` directory.  
