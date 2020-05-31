@@ -30,61 +30,63 @@ import date.liyin.vly.virtualrender.AnimationRepeat
 import date.liyin.vly.virtualrender.renderer.Pure3DRenderer
 import java.io.File
 
+//3D 安装界面
 class DDDConfigFragment : Fragment() {
-    lateinit var fileInstallCache: File
-    private lateinit var mRender: Pure3DRenderer
-    private lateinit var sceneView: SceneView
-    private lateinit var renderable: Renderable
-    private lateinit var transformationSystem: TransformationSystem
-    private lateinit var sw_enable_animation: Switch
-    private lateinit var sb_speed: SeekBar
-    private lateinit var btn_walkanimation: Button
-    private lateinit var btn_baseanimation: Button
-    private var needCopy = true
+    lateinit var fileInstallCache: File //安装缓存
+    private lateinit var mRender: Pure3DRenderer //3D 渲染器
+    private lateinit var sceneView: SceneView //非 AR 渲染界面
+    private lateinit var renderable: Renderable //模型
+    private lateinit var transformationSystem: TransformationSystem //创建变换系统
+    private lateinit var swEnableAnimation: Switch //是否开启模型全局动画
+    private lateinit var sbSpeed: SeekBar //步行速度
+    private lateinit var btnWalkAnimation: Button //步行动画
+    private lateinit var btnBaseAnimation: Button //基础动画（默认值）
+    private var needCopy = true //是否需要复制模型
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_d_d_d_config, container, false)
-        val internal = requireArguments().getBoolean("installInternal")
-        val path = requireArguments().getParcelable<Uri>("install")
-        val editUid = requireArguments().getLong("uid")
+        val internal = requireArguments().getBoolean("installInternal") //获取是否使用内置模型
+        val path = requireArguments().getParcelable<Uri>("install") //是否是安装模式
+        val editUid = requireArguments().getLong("uid") //获得 UID
         val isEdit = requireArguments().containsKey("uid")
-        sw_enable_animation = view.findViewById(R.id.sw_3d_animation)
-        sb_speed = view.findViewById(R.id.sb_walkspeed)
-        btn_baseanimation = view.findViewById(R.id.btn_3d_idle_animation)
-        btn_walkanimation = view.findViewById(R.id.btn_3d_walkanimation)
+        swEnableAnimation = view.findViewById(R.id.sw_3d_animation)
+        sbSpeed = view.findViewById(R.id.sb_walkspeed)
+        btnBaseAnimation = view.findViewById(R.id.btn_3d_idle_animation)
+        btnWalkAnimation = view.findViewById(R.id.btn_3d_walkanimation)
         sceneView = view.findViewById(R.id.sv_3d_install_preview)
-        sw_enable_animation.setOnCheckedChangeListener { _, isChecked ->
+        swEnableAnimation.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                btn_walkanimation.isEnabled = true
-                if (btn_walkanimation.text != getString(R.string.select_no_action)) {
-                    btn_baseanimation.isEnabled = true
-                    sb_speed.isEnabled = true
+                btnWalkAnimation.isEnabled = true
+                if (btnWalkAnimation.text != getString(R.string.select_no_action)) {
+                    btnBaseAnimation.isEnabled = true
+                    sbSpeed.isEnabled = true
                 }
             } else {
-                btn_baseanimation.isEnabled = false
-                btn_walkanimation.isEnabled = false
-                sb_speed.isEnabled = false
+                btnBaseAnimation.isEnabled = false
+                btnWalkAnimation.isEnabled = false
+                sbSpeed.isEnabled = false
             }
         }
-        btn_walkanimation.setOnClickListener {
+        btnWalkAnimation.setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setItems(
                     mRender.getAnimationList().toMutableList()
-                        .apply { this.add(0, getString(R.string.select_no_action)) }.toTypedArray()
+                        .apply { this.add(0, getString(R.string.select_no_action)) }
+                        .toTypedArray() //在列表中插入空选项
                 ) { _, pos ->
                     if (pos == 0) {
-                        btn_walkanimation.text = getString(R.string.select_no_action)
-                        sb_speed.isEnabled = false
-                        btn_baseanimation.isEnabled = false
+                        btnWalkAnimation.text = getString(R.string.select_no_action)
+                        sbSpeed.isEnabled = false
+                        btnBaseAnimation.isEnabled = false
                         mRender.stopLastAnimation()
                     } else {
-                        btn_walkanimation.text = mRender.getAnimationList().toTypedArray()[pos - 1]
-                        sb_speed.isEnabled = true
-                        btn_baseanimation.isEnabled = true
+                        btnWalkAnimation.text = mRender.getAnimationList().toTypedArray()[pos - 1]
+                        sbSpeed.isEnabled = true
+                        btnBaseAnimation.isEnabled = true
                         mRender.playAnimation(
-                            btn_walkanimation.text.toString(),
+                            btnWalkAnimation.text.toString(),
                             null,
                             AnimationRepeat.INFINITE()
                         ) { }
@@ -92,53 +94,54 @@ class DDDConfigFragment : Fragment() {
                 }
                 .create().show()
         }
-        btn_baseanimation.setOnClickListener {
+        btnBaseAnimation.setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setItems(
                     mRender.getAnimationList().toMutableList()
-                        .apply { this.add(0, getString(R.string.select_no_action)) }.toTypedArray()
+                        .apply { this.add(0, getString(R.string.select_no_action)) }
+                        .toTypedArray() //在列表中插入空选项
                 ) { _, pos ->
                     if (pos == 0) {
-                        btn_baseanimation.text = getString(R.string.select_no_action)
+                        btnBaseAnimation.text = getString(R.string.select_no_action)
                     } else {
-                        btn_baseanimation.text = mRender.getAnimationList().toTypedArray()[pos - 1]
+                        btnBaseAnimation.text = mRender.getAnimationList().toTypedArray()[pos - 1]
                     }
                 }
                 .create().show()
         }
         sceneView.setBackgroundColor(Color.GRAY)
-        if (internal) {
-            setupInternal()
-            btn_baseanimation.isEnabled = false
-            btn_walkanimation.isEnabled = false
-            sb_speed.isEnabled = false
+        if (internal) { //如果使用内置模型
+            setupInternal() //加载内置模型
+            btnBaseAnimation.isEnabled = false
+            btnWalkAnimation.isEnabled = false
+            sbSpeed.isEnabled = false
             view.findViewById<Button>(R.id.btn_install_3d).let {
                 it.setText(R.string.dialog_btn_install)
                 it.setOnClickListener { install() }
             }
-        } else {
+        } else { //非内置模型
             if (path == null) {
-                if (isEdit) {
-                    setupEdit(view, editUid)
+                if (isEdit) { //是否为编辑模式
+                    setupEdit(view, editUid) //设置为编辑模式
                     Thread {
                         val model = AppDatabase.getInstance(requireContext())._3dModelDao()
                             .loadAllModelWithUID(editUid)?.first()
                         requireActivity().runOnUiThread {
-                            sw_enable_animation.isSelected = model!!.useAnimation
+                            swEnableAnimation.isSelected = model!!.useAnimation
                             if (model.useAnimation) {
                                 if (model.allowWalkAnimation) {
-                                    btn_baseanimation.text = model.baseAnimation
-                                    btn_walkanimation.text = model.walkAnimation
-                                    sb_speed.progress = (model.walkActionSpeed * 1000f).toInt()
+                                    btnBaseAnimation.text = model.baseAnimation
+                                    btnWalkAnimation.text = model.walkAnimation
+                                    sbSpeed.progress = (model.walkActionSpeed * 1000f).toInt()
                                 } else {
-                                    btn_baseanimation.isEnabled = false
-                                    btn_walkanimation.isEnabled = false
-                                    sb_speed.isEnabled = false
+                                    btnBaseAnimation.isEnabled = false
+                                    btnWalkAnimation.isEnabled = false
+                                    sbSpeed.isEnabled = false
                                 }
                             } else {
-                                btn_baseanimation.isEnabled = false
-                                btn_walkanimation.isEnabled = false
-                                sb_speed.isEnabled = false
+                                btnBaseAnimation.isEnabled = false
+                                btnWalkAnimation.isEnabled = false
+                                sbSpeed.isEnabled = false
                             }
                         }
                     }.start()
@@ -165,6 +168,7 @@ class DDDConfigFragment : Fragment() {
         return view
     }
 
+    //编辑模式
     private fun setupEdit(view: View, uid: Long) {
         Thread {
             val p3dDao = AppDatabase.getInstance(requireContext())._3dModelDao()
@@ -196,8 +200,9 @@ class DDDConfigFragment : Fragment() {
         }
     }
 
+    //设置内置模型
     private fun setupInternal() {
-        needCopy = false
+        needCopy = false //不需要复制
         transformationSystem = createTransformSystem()
         mRender = Pure3DRenderer(requireContext(), loadEnded)
         mRender.loadModel {
@@ -212,6 +217,7 @@ class DDDConfigFragment : Fragment() {
         }
     }
 
+    //设置安装模式
     private fun setupInstall(view: View, path: Uri) {
         transformationSystem = createTransformSystem()
         fileInstallCache = File(requireContext().externalCacheDir, "install.glb")
@@ -230,6 +236,7 @@ class DDDConfigFragment : Fragment() {
         }
     }
 
+    //创建变换世界
     private fun createTransformSystem(): TransformationSystem {
         val selectionVisualizer = FootprintSelectionVisualizer()
         val transformationSystem =
@@ -271,30 +278,31 @@ class DDDConfigFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         if (needCopy) {
-            fileInstallCache.let {
+            fileInstallCache.let { //如果安装临时文件存在 则删除
                 if (it.exists()) it.delete()
             }
         }
     }
 
+    //应用编辑
     private fun edit(uid: Long) {
         Thread {
             val p3dDao = AppDatabase.getInstance(requireContext())._3dModelDao()
             val p3d = p3dDao.loadAllModelWithUID(uid)!!.first()!!
-            if (sw_enable_animation.isChecked) {
+            if (swEnableAnimation.isChecked) {
                 p3d.useAnimation = true
-                if (btn_walkanimation.text.toString() == getString(R.string.select_no_action)) {
+                if (btnWalkAnimation.text.toString() == getString(R.string.select_no_action)) {
                     p3d.allowWalkAnimation = false
                     p3d.baseAnimation = ""
                     p3d.walkAnimation = ""
                 } else {
                     p3d.allowWalkAnimation = true
-                    p3d.walkAnimation = btn_walkanimation.text.toString()
-                    p3d.walkActionSpeed = (sb_speed.progress / 1000.0)
-                    if (btn_baseanimation.text.toString() == getString(R.string.select_no_action)) {
+                    p3d.walkAnimation = btnWalkAnimation.text.toString()
+                    p3d.walkActionSpeed = (sbSpeed.progress / 1000.0)
+                    if (btnBaseAnimation.text.toString() == getString(R.string.select_no_action)) {
                         p3d.baseAnimation = ""
                     } else {
-                        p3d.baseAnimation = btn_baseanimation.text.toString()
+                        p3d.baseAnimation = btnBaseAnimation.text.toString()
                     }
                 }
             } else {
@@ -312,6 +320,7 @@ class DDDConfigFragment : Fragment() {
         }.start()
     }
 
+    //应用安装
     private fun install() {
         AlertDialog.Builder(requireContext()).apply {
             val input = EditText(requireContext())
@@ -349,21 +358,21 @@ class DDDConfigFragment : Fragment() {
                         prebuildSetting.uid = affect
                         prebuildSetting.modelName = input.text.toString().trim()
                         /* TODO Set 3D */
-                        if (sw_enable_animation.isChecked) {
+                        if (swEnableAnimation.isChecked) {
                             prebuildSetting.useAnimation = true
-                            if (btn_walkanimation.text.toString() == getString(R.string.select_no_action)) {
+                            if (btnWalkAnimation.text.toString() == getString(R.string.select_no_action)) {
                                 prebuildSetting.allowWalkAnimation = false
                                 prebuildSetting.baseAnimation = ""
                                 prebuildSetting.walkAnimation = ""
                             } else {
                                 prebuildSetting.allowWalkAnimation = true
-                                prebuildSetting.walkAnimation = btn_walkanimation.text.toString()
-                                prebuildSetting.walkActionSpeed = (sb_speed.progress / 1000.0)
-                                if (btn_baseanimation.text.toString() == getString(R.string.select_no_action)) {
+                                prebuildSetting.walkAnimation = btnWalkAnimation.text.toString()
+                                prebuildSetting.walkActionSpeed = (sbSpeed.progress / 1000.0)
+                                if (btnBaseAnimation.text.toString() == getString(R.string.select_no_action)) {
                                     prebuildSetting.baseAnimation = ""
                                 } else {
                                     prebuildSetting.baseAnimation =
-                                        btn_baseanimation.text.toString()
+                                        btnBaseAnimation.text.toString()
                                 }
                             }
                         } else {

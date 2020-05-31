@@ -19,7 +19,7 @@ import date.liyin.vly.utils._3DModelSetting
 import date.liyin.vly.virtualrender.PlaceMode
 import date.liyin.vly.virtualrender.VirtualRender
 import java.io.File
-
+//3D 渲染器
 class Pure3DRenderer : VirtualRender {
     private val animation = mutableMapOf<String, AnimationData>()
     private var lastPlayedAnimation: ModelAnimator? = null
@@ -80,18 +80,18 @@ class Pure3DRenderer : VirtualRender {
 
     override fun getPlaceMode(): PlaceMode = PlaceMode.HORIZONTAL_UPWARD_ONLY
     override fun getFloatingConfig(): FloatingConfig = floatConfig {
-        MOVE()
-        if (modelSetting.useAnimation) ACTION()
+        MOVE() //允许移动
+        if (modelSetting.useAnimation) ACTION() //视情况开启动画按钮
     }
 
     override fun getModelTransformConfig(): ModelTransformConfig = modelTransfromConfig {
-        ROTATE()
+        ROTATE() //允许手动旋转
     }
 
     fun getModelSetting() = modelSetting
     override fun loadModel(func: (Renderable) -> Unit) {
         ModelRenderable.builder().apply {
-            if (modelSetting.type == "INTERNAL") {
+            if (modelSetting.type == "INTERNAL") { //内置模型特例
                 this.setSource(
                     context,
                     INTERNAL.getInternalModel()!!
@@ -110,7 +110,7 @@ class Pure3DRenderer : VirtualRender {
                         .setRecenterMode(RenderableSource.RecenterMode.ROOT)
                         .build()
                 )
-        }.setRegistryId("GLB_ASSETS")
+        }.setRegistryId("GLB_ASSETS") //目前 GLB 直接渲染有问题，材质无法显示等待修改（bug）
             .build()
             .thenAccept { model ->
                 model.isShadowCaster = true

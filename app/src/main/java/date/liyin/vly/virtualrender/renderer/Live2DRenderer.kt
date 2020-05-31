@@ -27,7 +27,7 @@ import date.liyin.vly.virtualrender.VirtualRender
 import org.json.JSONObject
 import java.io.File
 import java.util.zip.ZipFile
-
+//Live2D 渲染器
 class Live2DRenderer(context: Context, uid: Long, loadEnded: () -> Unit) :
     VirtualRender(context, uid, loadEnded), JniBridgeJava.FileGetter {
     private lateinit var renderable: ViewRenderable
@@ -39,7 +39,7 @@ class Live2DRenderer(context: Context, uid: Long, loadEnded: () -> Unit) :
     private val texture = SurfaceTexture(0)
 
     init {
-        Thread {
+        Thread { //初始化
             val modelDao = AppDatabase.getInstance(context)._l2dModelDao()
             modelSetting = modelDao.loadAllModelWithUID(uid)!![0]!!
             zipfile = ZipFile(File(context.getExternalFilesDir(null), "${modelSetting.uid}.zip"))
@@ -66,12 +66,12 @@ class Live2DRenderer(context: Context, uid: Long, loadEnded: () -> Unit) :
 
     override fun getPlaceMode(): PlaceMode = PlaceMode.HORIZONTAL_UPWARD_AND_VERTICAL_DIRECT
     override fun getFloatingConfig(): FloatingConfig = floatConfig {
-        FACE()
-        ACTION()
+        FACE() //显示面部动作按钮
+        ACTION() //显示动画按钮
     }
 
     override fun getModelTransformConfig(): ModelTransformConfig = modelTransfromConfig {
-        FAKESHADOW()
+        FAKESHADOW() //启用虚拟影子
     }
 
     @ExperimentalStdlibApi
@@ -80,16 +80,18 @@ class Live2DRenderer(context: Context, uid: Long, loadEnded: () -> Unit) :
             .setView(context, R.layout.ar_imageview)
             .setVerticalAlignment(ViewRenderable.VerticalAlignment.BOTTOM)
             .setHorizontalAlignment(ViewRenderable.HorizontalAlignment.CENTER)
-            .setSizer(FixedHeightViewSizer(modelSetting.height))
+            .setSizer(FixedHeightViewSizer(modelSetting.height)) //设置模型高度为数据库中记录的高度
             .build()
             .thenAccept { model ->
+                //使用虚拟影子关闭自动影子
                 model.isShadowCaster = false
                 model.isShadowReceiver = false
-                func(model)
+                func(model) //回调
                 this.renderable = model
                 mRenderer.setActivity(activity)
                 mRenderer.setSurfaceTextureSize(modelSetting.canvasWidth, modelSetting.canvasHeight)
                 mRenderer.setOnLoaded {
+                    //加载动画组
                     val l2name = JniBridgeJava.nativeGetL2DName()
                     val jsonr = requestFile("$l2name.model3.json").decodeToString()
                     val json = JSONObject(jsonr)
@@ -103,12 +105,11 @@ class Live2DRenderer(context: Context, uid: Long, loadEnded: () -> Unit) :
                     } else {
                         animation = emptySet()
                     }
-//                    animation = JniBridgeJava.nativeGetMotionList().toSet()
                     facial = JniBridgeJava.nativeGetFaceList().toSet()
                     loadEnded()
                 }
                 JniBridgeJava.nativeSetConfigMode(false)
-                mRenderer.start()
+                mRenderer.start() //开始渲染
                 mRenderer.setSurfaceTexture(texture)
             }
             .exceptionally {
@@ -144,6 +145,7 @@ class Live2DRenderer(context: Context, uid: Long, loadEnded: () -> Unit) :
         nodeTransformableNode: TransformableNode?,
         fakeShadow: TransformableNode?
     ) {
+        //自动旋转以适应摄像机位置
         if (anchor != null && anchorNode != null && fakeShadow != null) {
             val cameraPosition = arSceneView.scene.camera.worldPosition.apply { this.y = 0f }
             val cardPosition = fakeShadow.worldPosition.apply { this.y = 0f }

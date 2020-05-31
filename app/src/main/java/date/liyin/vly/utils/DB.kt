@@ -4,44 +4,45 @@ import android.content.Context
 import androidx.room.*
 import org.json.JSONArray
 import org.json.JSONObject
-
+//ROOM DAO
 @Entity
-data class ModelSetting(
-    @PrimaryKey(autoGenerate = true) val uid: Long = 0,
-    @ColumnInfo(name = "name") val name: String,
-    @ColumnInfo(name = "type") val type: String
+data class ModelSetting( //主存储
+    @PrimaryKey(autoGenerate = true) val uid: Long = 0, //模型ID
+    @ColumnInfo(name = "name") val name: String, //模型名称
+    @ColumnInfo(name = "type") val type: String //类型
 )
 
 @Entity
-data class _3DModelSetting(
+data class _3DModelSetting( //3D
     @PrimaryKey(autoGenerate = true) val _3did: Long = 0,
-    @ColumnInfo(name = "uid") var uid: Long,
-    @ColumnInfo(name = "type") var type: String,
-    @ColumnInfo(name = "modelName") var modelName: String,
-    @ColumnInfo(name = "useAnimation") var useAnimation: Boolean,
-    @ColumnInfo(name = "animationFilter") var animationFilter: Set<String>,
-    @ColumnInfo(name = "baseAnimation") var baseAnimation: String,
-    @ColumnInfo(name = "animationSpeed") var animationSpeed: Map<String, Long>,
-    @ColumnInfo(name = "allowWalkAnimation") var allowWalkAnimation: Boolean,
-    @ColumnInfo(name = "walkAnimation") var walkAnimation: String,
-    @ColumnInfo(name = "walkActionSpeed") var walkActionSpeed: Double,
-    @ColumnInfo(name = "walkAnimationSpeed") var walkAnimationSpeed: Double //One Time
+    @ColumnInfo(name = "uid") var uid: Long, //模型ID
+    @ColumnInfo(name = "type") var type: String, //模型类型 GLB GLTF 或者别的什么
+    @ColumnInfo(name = "modelName") var modelName: String, //模型名称
+    @ColumnInfo(name = "useAnimation") var useAnimation: Boolean, //是否使用动画
+    @ColumnInfo(name = "animationFilter") var animationFilter: Set<String>, //动画过滤器（未导出的功能）
+    @ColumnInfo(name = "baseAnimation") var baseAnimation: String, //基础动作
+    @ColumnInfo(name = "animationSpeed") var animationSpeed: Map<String, Long>, //覆盖动画速度（未导出的功能）
+    @ColumnInfo(name = "allowWalkAnimation") var allowWalkAnimation: Boolean, //允许移动动画
+    @ColumnInfo(name = "walkAnimation") var walkAnimation: String, //移动动画名
+    @ColumnInfo(name = "walkActionSpeed") var walkActionSpeed: Double, //移动动画速度
+    @ColumnInfo(name = "walkAnimationSpeed") var walkAnimationSpeed: Double //一次移动的动画速度（不再使用）
 )
 
 @Entity
-data class _L2DModelSetting(
+data class _L2DModelSetting( //Live2D
     @PrimaryKey(autoGenerate = true) val _l2did: Long = 0,
-    @ColumnInfo(name = "uid") var uid: Long,
-    @ColumnInfo(name = "modelName") var modelName: String,
-    @ColumnInfo(name = "modelJsonName") var modelJsonName: String,
-    @ColumnInfo(name = "canvasHeight") var canvasHeight: Int,
+    @ColumnInfo(name = "uid") var uid: Long, //模型ID
+    @ColumnInfo(name = "modelName") var modelName: String, //模型名称
+    @ColumnInfo(name = "modelJsonName") var modelJsonName: String, //模型 JSON 名
+    @ColumnInfo(name = "canvasHeight") var canvasHeight: Int, //Canvas 大小，目前不可自定义（未导出的功能）
     @ColumnInfo(name = "canvasWidth") var canvasWidth: Int,
-    @ColumnInfo(name = "x") var x: Float,
+    @ColumnInfo(name = "x") var x: Float, //X，Y 坐标
     @ColumnInfo(name = "y") var y: Float,
-    @ColumnInfo(name = "scale") var scale: Float,
-    @ColumnInfo(name = "height") var height: Float
+    @ColumnInfo(name = "scale") var scale: Float, //缩放
+    @ColumnInfo(name = "height") var height: Float //记录模型高度
 )
 
+//ROOM DAO 详见 ROOM 使用方法
 @Dao
 interface ModelDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
@@ -93,6 +94,7 @@ interface _L2DModelDao {
     fun loadAllModelWithUID(uid: Long): Array<_L2DModelSetting?>?
 }
 
+//使用 JSON 转换 Map
 class MapConverters {
     @TypeConverter
     fun JSONStringfromMap(value: Map<String, Long>?): String? {
@@ -116,6 +118,7 @@ class MapConverters {
     }
 }
 
+//使用 JSON 转换 Set
 class SetConverters {
     @TypeConverter
     fun JSONStringfromSet(value: Set<String>?): String? {

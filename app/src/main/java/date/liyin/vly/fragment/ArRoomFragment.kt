@@ -45,68 +45,58 @@ import date.liyin.vly.virtualrender.AnimationRepeat
 import date.liyin.vly.virtualrender.PlaceMode
 import date.liyin.vly.virtualrender.VirtualRender
 import date.liyin.vly.virtualrender.renderer.Live2DRenderer
-import date.liyin.vly.virtualrender.renderer.NoneRender
+import date.liyin.vly.virtualrender.renderer.NoneRenderer
 import date.liyin.vly.virtualrender.renderer.Pure3DRenderer
 import java.io.File
 import java.io.IOException
 import kotlin.math.sqrt
 
+//AR 场景
 class ArRoomFragment : ArFragment(), IKeyPassthough {
-    //    class ModelSetting {
-//        companion object {
-////            const val enableWalkAnimation = true //启用移动动作动画
-////            const val walkDurationOnce : Double = 1.5 //移动动画步长（决定运动速度）
-////            const val walkSpeedRaw : Long = 500 //移动动画时长（毫秒）
-////            fun animationFilter(name: String) : Boolean = !name.contains(".001")
-////            val walkAnimationName : String? = "Armature|PostTestAni" //移动动画名
-////            val baseAnimationName : String? = "Armature|Leg" //基态名 运动结束会自动返回基态 如果为 null 则不返回基态
-////            val animationDuration = mapOf<String, Long>(Pair("Armature|Leg", 2000)) //覆盖定义动画时长
-//        }
-//    }
-    private lateinit var modelRenderable: Renderable
-    private lateinit var fakeShadowRenderable: Renderable
-    private var placeMode = true
-    private var lastAnchor: Anchor? = null
-    private var lastModelTransformable: TransformableNode? = null
-    private lateinit var videoRecorder: VideoRecorder
-    private val captureThread = HandlerThread("CaptureThread")
-    private var lastAnchorNode: AnchorNode? = null
-    private var fakeShadowTransformable: TransformableNode? = null
-    private lateinit var waitingLayout: View
-    private lateinit var fabLayout: FloatingActionButton
-    private var moving = false
+    private lateinit var modelRenderable: Renderable //模型
+    private lateinit var fakeShadowRenderable: Renderable //虚拟影子
+    private var placeMode = true //是否处于放置模式
+    private var lastAnchor: Anchor? = null //最后一个操作的定标
+    private var lastModelTransformable: TransformableNode? = null //最后一个操作的模型变换
+    private lateinit var videoRecorder: VideoRecorder //录制库
+    private val captureThread = HandlerThread("CaptureThread") //录制线程
+    private var lastAnchorNode: AnchorNode? = null //最后一个操作的定标节点
+    private var fakeShadowTransformable: TransformableNode? = null //虚拟影子变化节点
+    private lateinit var waitingLayout: View //等待画面
+    private lateinit var fabLayout: FloatingActionButton //右下角设置按钮
+    private var moving = false //是否正在处于移动模式
 
-    private lateinit var virInstance: VirtualRender
+    private lateinit var virInstance: VirtualRender //渲染器
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val args = requireArguments()
-        virInstance = when (args.getString("type", "None")) {
+        virInstance = when (args.getString("type", "None")) { //按照启动模式来初始化渲染器
             "Live2D" -> Live2DRenderer(requireContext(), args.getLong("uid"), loadEnded)
             "3D" -> Pure3DRenderer(requireContext(), args.getLong("uid"), loadEnded)
-            else -> NoneRender(requireContext(), 0, loadEnded)
+            else -> NoneRenderer(requireContext(), 0, loadEnded)
         }
         virInstance.activity = requireActivity()
-        initCaptureSystem()
-        injectLayout()
-        loadFakeShadow()
-        virInstance.loadModel {
+        initCaptureSystem() //初始化录制
+        injectLayout() //注入等待界面
+        loadFakeShadow() //初始化虚拟影子
+        virInstance.loadModel {//设置在 loadModel 时将渲染器的模型进行接管
             modelRenderable = it
         }
-        setOnTapArPlaneListener { hitResult, plane, _ ->
-            if (placeMode) {
-                when (virInstance.getPlaceMode()) {
+        setOnTapArPlaneListener { hitResult, plane, _ -> //当选中了某个平面
+            if (placeMode) { //是否处于放置模式，在放置模式则放置模型，否则处理移动
+                when (virInstance.getPlaceMode()) { //获得此渲染器支持的放置模式
                     PlaceMode.HORIZONTAL_UPWARD_ONLY -> if (plane.type != Plane.Type.HORIZONTAL_UPWARD_FACING) return@setOnTapArPlaneListener
                     PlaceMode.VERTICAL_ONLY -> if (plane.type != Plane.Type.VERTICAL) return@setOnTapArPlaneListener
                     else -> {
                     }
                 }
-                val hanchor = hitResult.createAnchor()
+                val hanchor = hitResult.createAnchor() //创建定标
                 lastAnchor = hanchor
                 val anchorNode = AnchorNode(lastAnchor)
                 anchorNode.setParent(arSceneView.scene)
                 lastAnchorNode = anchorNode
                 val modelTransformable = TransformableNode(transformationSystem)
-                val config = virInstance.getModelTransformConfig()
+                val config = virInstance.getModelTransformConfig() //获得渲染器变换设置
                 modelTransformable.translationController.isEnabled = config.translation
                 modelTransformable.rotationController.isEnabled = config.rotate
                 modelTransformable.scaleController.isEnabled = config.scale
@@ -119,7 +109,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
                 }
                 modelTransformable.renderable = modelRenderable
                 lastModelTransformable = modelTransformable
-                if (config.fakeShadow) {
+                if (config.fakeShadow) { //开启虚拟影子 通过在模型和原始定标之间添加一层影子节点定标
                     fakeShadowTransformable = TransformableNode(transformationSystem).apply {
                         this.translationController.isEnabled = false
                         this.scaleController.isEnabled = false
@@ -136,13 +126,13 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
                 placeMode = false
                 EasyFloat.getFloatView()!!.findViewById<ToggleButton>(R.id.sw_floor)?.isChecked =
                     false
-//                getDefaultFloating(this.activity).findViewById<ToggleButton>(R.id.sw_floor)?.isChecked = false
-            } else {
-                if (/*getDefaultFloating(this.activity)*/EasyFloat.getFloatView()!!
-                        .findViewById<ToggleButton>(R.id.sw_walkmode)!!.isChecked
+            } else { //处理移动
+                if (EasyFloat.getFloatView()!!
+                        .findViewById<ToggleButton>(R.id.sw_walkmode)!!.isChecked //是否处于允许移动模式
                 ) {
-                    if (moving) return@setOnTapArPlaneListener
+                    if (moving) return@setOnTapArPlaneListener //如果在移动则跳过
                     if (virInstance["allowWalkAnimation", false] as Boolean) if (virInstance["walkAnimation", null] == null || (virInstance["walkAnimation", null] as String) !in virInstance || (virInstance["baseAnimation", null] != null && (virInstance["baseAnimation", null] as String) !in virInstance)) {
+                        //检查渲染器设置是否配置了移动选项
                         Toast.makeText(
                             this.context,
                             R.string.status_walk_notfound,
@@ -150,13 +140,14 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
                         ).show()
                         return@setOnTapArPlaneListener
                     }
-                    val destAnchor = hitResult.createAnchor()
+                    val destAnchor = hitResult.createAnchor() //目标位置
                     val destAnchorNode = AnchorNode(destAnchor)
                     destAnchorNode.setParent(arSceneView.scene)
                     val shouldMove =
                         if (virInstance.getModelTransformConfig().fakeShadow) fakeShadowTransformable!! else lastModelTransformable!!
                     shouldMove.setParent(destAnchorNode)
                     shouldMove.worldPosition = lastAnchorNode!!.worldPosition
+                    //运算移动信息（注意有旋转 bug，待解决）
                     val direction = Vector3.subtract(
                         destAnchorNode.worldPosition,
                         lastAnchorNode!!.worldPosition
@@ -164,7 +155,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
                         if (GlobalSetting.doDifferenceSufaceCorrection) this.y = 0f
                     }
                     val look = Quaternion.lookRotation(direction, Vector3.up())
-                    ObjectAnimator().apply {
+                    ObjectAnimator().apply { //开始移动动画
                         this.setObjectValues(
                             lastAnchorNode!!.localRotation,
                             look
@@ -196,7 +187,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
                                 this.doOnStart {
                                     if (virInstance["allowWalkAnimation", false] as Boolean) {
                                         virInstance.stopLastAnimation()
-                                        virInstance.playAnimation(
+                                        virInstance.playAnimation( //播放移动步行动画
                                             (virInstance["walkAnimation", ""] as String),
                                             if (virInstance["walkAnimationSpeed", (-1).toDouble()] as Double > 0) ((virInstance["walkAnimationSpeed", (-1).toDouble()] as Double) * 1000).toLong() else null,
                                             AnimationRepeat.INFINITE(),
@@ -204,7 +195,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
                                         )
                                     }
                                 }
-                                this.doOnEnd {
+                                this.doOnEnd { //结束时配置
                                     if (virInstance["allowWalkAnimation", false] as Boolean) {
                                         virInstance.stopLastAnimation()
                                         virInstance.setModelToAnimationStartOrEnd()
@@ -229,6 +220,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
         arSceneView.planeRenderer.isShadowReceiver = true
     }
 
+    //加载虚拟影子
     private fun loadFakeShadow() {
         ViewRenderable.builder()
             .setSizer(FixedWidthViewSizer(0.5f))
@@ -244,14 +236,16 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
             }
     }
 
+    //结束加载回调
     private val loadEnded: () -> Unit = {
         requireActivity().runOnUiThread {
-            setupFloating()
-            waitingLayout.visibility = View.GONE
+            setupFloating() //设置悬浮选择窗口
+            waitingLayout.visibility = View.GONE //移除等待界面
             fabLayout.show()
         }
     }
 
+    //初始化录制系统
     private fun initCaptureSystem() {
         videoRecorder = VideoRecorder(requireActivity()).apply {
             val orientation = resources.configuration.orientation
@@ -261,8 +255,9 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
         captureThread.start()
     }
 
+    //注入等待界面和设置按钮
     private fun injectLayout() {
-        fabLayout = FloatingActionButton(requireContext()).apply {
+        fabLayout = FloatingActionButton(requireContext()).apply { //设置按钮
             this.layoutParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT
@@ -297,7 +292,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
             this.hide()
         }
         (arSceneView.parent as FrameLayout).addView(fabLayout)
-        waitingLayout = View.inflate(requireContext(), R.layout.layout_waiting, null).apply {
+        waitingLayout = View.inflate(requireContext(), R.layout.layout_waiting, null).apply { //等待界面
             this.layoutParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.MATCH_PARENT
@@ -308,28 +303,29 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
         (arSceneView.parent as FrameLayout).addView(waitingLayout)
     }
 
-
+    //设置悬浮设置窗口
     private fun setupFloating() {
         EasyFloat.with(this.requireActivity())
             .setLayout(R.layout.arcontroll_container, OnInvokeView {
-                val swBroadcast = it.findViewById<ToggleButton>(R.id.sw_boardcast)
-                val swFloor = it.findViewById<ToggleButton>(R.id.sw_floor)
-                val btnFace = it.findViewById<Button>(R.id.btn_face)
-                val btnAction = it.findViewById<Button>(R.id.btn_action)
-                val btnRemove = it.findViewById<Button>(R.id.btn_remove)
-                val swPermission = it.findViewById<ToggleButton>(R.id.sw_permission)
-                val swAudio = it.findViewById<ToggleButton>(R.id.sw_audio)
-                val swWalk = it.findViewById<ToggleButton>(R.id.sw_walkmode)
+                val swBroadcast =
+                    it.findViewById<ToggleButton>(R.id.sw_boardcast) //推流按钮（目前无法解决 RTMP 的问题，已禁用）
+                val swFloor = it.findViewById<ToggleButton>(R.id.sw_floor) //显示地板
+                val btnFace = it.findViewById<Button>(R.id.btn_face) //面部表情控制
+                val btnAction = it.findViewById<Button>(R.id.btn_action) //动作控制
+                val btnRemove = it.findViewById<Button>(R.id.btn_remove) //移除已放置的模型
+                val swPermission = it.findViewById<ToggleButton>(R.id.sw_permission) //设置录制权限
+                val swAudio = it.findViewById<ToggleButton>(R.id.sw_audio) //音频录制开关
+                val swWalk = it.findViewById<ToggleButton>(R.id.sw_walkmode) //移动开关
                 swWalk.isChecked = GlobalSetting.walk
                 if (this.requireActivity()
-                        .checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
+                        .checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED //检查音频权限
                 ) {
                     swAudio.isChecked = false
                 } else {
                     swAudio.isChecked = GlobalSetting.walk
                 }
                 if (this.requireActivity()
-                        .checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        .checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED //检查外置存储权限
                 ) {
                     swPermission.isChecked = true
                     swPermission.isEnabled = false
@@ -356,14 +352,14 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
                 swFloor.setOnCheckedChangeListener { _, isChecked ->
                     setPlaneRender(isChecked)
                 }
-                btnRemove.setOnClickListener {
+                btnRemove.setOnClickListener { //重置
                     lastAnchor?.detach()
                     lastAnchor = null
                     lastAnchorNode = null
                     placeMode = true
                     swFloor.isChecked = true
                 }
-                btnFace.setOnLongClickListener {
+                btnFace.setOnLongClickListener { //长按时弹出选择界面
                     val builder = AlertDialog.Builder(requireContext())
                     builder.setTitle(R.string.dialog_select_face)
                     builder.setItems(virInstance.getFaceList().toTypedArray()) { _, which ->
@@ -372,7 +368,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
                     builder.create().show()
                     true
                 }
-                btnFace.setOnClickListener {
+                btnFace.setOnClickListener { //调用渲染器对应功能
                     if (btnFace.text == getString(R.string.btn_facial_expression)) {
                         Toast.makeText(
                             requireContext(),
@@ -401,7 +397,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
                         return@setOnClickListener
                     }
                 }
-                btnAction.setOnLongClickListener {
+                btnAction.setOnLongClickListener { //显示动作列表
                     val builder = AlertDialog.Builder(requireContext())
                     builder.setTitle(R.string.dialog_select_action)
                     builder.setItems(virInstance.getAnimationList().toTypedArray()) { _, which ->
@@ -410,7 +406,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
                     builder.create().show()
                     true
                 }
-                btnAction.setOnClickListener {
+                btnAction.setOnClickListener { //调用渲染器动作
                     if (btnAction.text == getString(R.string.btn_action)) {
                         Toast.makeText(
                             requireContext(),
@@ -431,7 +427,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
                         virInstance.stopLastAnimation()
                         val speed =
                             (virInstance["animationSpeed", mapOf<String, Long>()] as Map<*, *>)[btnAction.text]
-                        virInstance.playAnimation(
+                        virInstance.playAnimation( //播放动画
                             btnAction.text.toString(),
                             if (speed != null) speed as Long else null,
                             null,
@@ -448,7 +444,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
                     }
                 }
                 var sync = true
-                swBroadcast.isEnabled = false
+                swBroadcast.isEnabled = false //推流 目前不可用
                 swBroadcast.setOnCheckedChangeListener { _, isChecked ->
                     if (!sync) {
                         sync = true
@@ -492,7 +488,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
             lastAnchorNode,
             lastModelTransformable,
             fakeShadowTransformable
-        )
+        ) //支持透传 update 给当前渲染器
         if (fakeShadowTransformable != null) {
             lastModelTransformable?.worldRotation = fakeShadowTransformable!!.worldRotation
             lastModelTransformable?.worldScale = fakeShadowTransformable!!.worldScale
@@ -500,10 +496,11 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
         }
     }
 
+    //设定 AR 相机
     override fun getSessionConfiguration(session: Session?) = Config(session).apply {
-        this.focusMode = Config.FocusMode.AUTO
+        this.focusMode = Config.FocusMode.AUTO //自动对焦
         this.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL
-        this.lightEstimationMode = Config.LightEstimationMode.ENVIRONMENTAL_HDR
+        this.lightEstimationMode = Config.LightEstimationMode.ENVIRONMENTAL_HDR //HDR 模式
     }
 
     private fun setPlaneRender(planeRender: Boolean) {
@@ -534,6 +531,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
         }
     }
 
+    //录制和拍照
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
         if (!EasyFloat.getFloatView()!!
                 .findViewById<ToggleButton>(R.id.sw_permission)!!.isChecked
@@ -541,13 +539,14 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
             return false
         }
         return when (keyCode) {
-            KeyEvent.KEYCODE_VOLUME_UP -> {
+            KeyEvent.KEYCODE_VOLUME_UP -> { //音量上键等于拍照
                 Toast.makeText(this.context, R.string.key_capture_start, Toast.LENGTH_SHORT).show()
                 val bitmap = Bitmap.createBitmap(
                     arSceneView.width,
                     arSceneView.height,
                     Bitmap.Config.ARGB_8888
                 )
+                //使用 PixelCopy 直接复制
                 PixelCopy.request(arSceneView, bitmap, {
                     if (it == PixelCopy.SUCCESS) {
                         val contentValues = ContentValues()
@@ -565,6 +564,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
                                 Environment.DIRECTORY_PICTURES + File.separator + "VSR"
                             )
                         }
+                        //使用 SAF 框架
                         val resolver = requireActivity().contentResolver
                         val contentUri =
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI
@@ -591,6 +591,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
                 }, Handler(captureThread.looper))
                 true
             }
+            //录制
             KeyEvent.KEYCODE_VOLUME_DOWN -> {
                 toggleRecord(false)
                 true
@@ -614,6 +615,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
             KeyEvent.KEYCODE_VOLUME_UP -> {
                 true
             }
+            //停止录制
             KeyEvent.KEYCODE_VOLUME_DOWN -> {
                 toggleRecord(true)
                 true
@@ -622,6 +624,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
         }
     }
 
+    //切换录制
     private fun toggleRecord(keyState: Boolean) {
         if (videoRecorder.isRecording && keyState)
             return
@@ -643,6 +646,7 @@ class ArRoomFragment : ArFragment(), IKeyPassthough {
         }
     }
 
+    //权限回调
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,

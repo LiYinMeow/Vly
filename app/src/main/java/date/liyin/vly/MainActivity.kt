@@ -6,7 +6,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import date.liyin.vly.utils.IKeyPassthough
-
+//唯一一个 Activity
 class MainActivity : AppCompatActivity() {
     lateinit var currentFragment: Fragment
     override fun onCreate(savedInstanceState: Bundle?) {

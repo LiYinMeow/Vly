@@ -11,13 +11,13 @@ import party.liyin.aralib.ARABindLayout;
 @ARABindLayout(R.layout.card_model)
 public class ModelBean extends AutoDataBean {
     @ARABind(view_id = R.id.btn_model, view_method = "setText", view_type = Button.class)
-    public String modelName;
-    public long modelId;
-    public String modelType;
+    public String modelName; //主界面按钮显示的内容
+    public long modelId; //模型ID
+    public String modelType; //模型类型
     @ARABind(view_id = R.id.btn_model, view_method = "setOnClickListener", view_type = Button.class)
-    public View.OnClickListener clickListener;
+    public View.OnClickListener clickListener; //点击时
     @ARABind(view_id = R.id.btn_model, view_method = "setOnLongClickListener", view_type = Button.class)
-    public View.OnLongClickListener longClickListener;
+    public View.OnLongClickListener longClickListener; //长按时
 
     public ModelBean(String modelName, long modelId, String modelType, View.OnClickListener clickListener, View.OnLongClickListener longClickListener) {
         this.modelName = modelName;

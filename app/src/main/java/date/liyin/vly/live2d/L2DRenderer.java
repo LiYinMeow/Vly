@@ -20,7 +20,7 @@ import date.liyin.vly.gles.WindowSurface;
  * We don't create a Looper, so the SurfaceTexture-by-way-of-TextureView callbacks
  * happen on the UI thread.
  */
-
+//Live2D 渲染器 详见官方 Sample
 public class L2DRenderer extends Thread implements TextureView.SurfaceTextureListener {
     private static volatile boolean sReleaseInCallback = true;
     private static String TAG = "L2DRenderer";
@@ -127,12 +127,6 @@ public class L2DRenderer extends Thread implements TextureView.SurfaceTextureLis
      * of vsync, but that's not nearly as much fun.
      */
     private void doAnimation(WindowSurface eglSurface) {
-//        final int BLOCK_WIDTH = 80;
-//        final int BLOCK_SPEED = 2;
-////        float clearColor = 0.0f;
-//        int xpos = -BLOCK_WIDTH / 2;
-//        int xdir = BLOCK_SPEED;
-
         Log.d(TAG, "Animating " + width + "x" + height + " EGL surface");
 
         while (true) {
@@ -149,35 +143,8 @@ public class L2DRenderer extends Thread implements TextureView.SurfaceTextureLis
             }
             JniBridgeJava.nativeOnDrawFrame();
 
-//            // Still alive, render a frame.
-//            GLES20.glClearColor(clearColor, 0f, 0f, 1.0f);
-//            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-//
-//            GLES20.glEnable(GLES20.GL_SCISSOR_TEST);
-//            GLES20.glScissor(xpos, height / 4, BLOCK_WIDTH, height / 2);
-//            GLES20.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-//            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-//            GLES20.glDisable(GLES20.GL_SCISSOR_TEST);
-//
-//            // Publish the frame.  If we overrun the consumer, frames will be dropped,
-//            // so on a sufficiently fast device the animation will run at faster than
-//            // the display refresh rate.
-//            //
-//            // If the SurfaceTexture has been destroyed, this will throw an exception.
-//            eglSurface.swapBuffers();
-//
-//            // Advance state
-//            clearColor += 0.015625f;
-//            if (clearColor > 1.0f) {
-//                clearColor = 0.0f;
-//            }
-//            xpos += xdir;
-//            if (xpos <= -BLOCK_WIDTH / 2 || xpos >= width - BLOCK_WIDTH / 2) {
-//                //Log.d(TAG, "change direction");
-//                xdir = -xdir;
-//            }
-
             // ==== Bitmap ===
+            //获取离屏数据等待渲染到 ImageView
             try {
                 byte[] bdata = JniBridgeJava.getLastData();
                 if (bdata.length > 0) {

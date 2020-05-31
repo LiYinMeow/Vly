@@ -9,9 +9,7 @@ import androidx.fragment.app.Fragment
 import date.liyin.vly.MainActivity
 import date.liyin.vly.R
 
-/**
- * A simple [Fragment] subclass.
- */
+//全局设置界面，目前未使用
 class ConfigFragment : Fragment() {
 
     override fun onCreateView(

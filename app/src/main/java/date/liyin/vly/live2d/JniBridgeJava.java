@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 
 import java.util.Arrays;
-
+//JNI 访问 Live2D 详见官方 Sample
 public class JniBridgeJava {
     private static final String LIBRARY_NAME = "VLY";
     private static Activity _activityInstance;

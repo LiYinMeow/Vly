@@ -30,6 +30,7 @@ import date.liyin.vly.R;
  * encode the video. The quality settings can be set explicitly or simply use the CamcorderProfile
  * class to select a predefined set of parameters.
  */
+//录制库 详见 Google Sample
 public class VideoRecorder {
     private static final String TAG = "VideoRecorder";
     private static final int DEFAULT_BITRATE = 10000000;

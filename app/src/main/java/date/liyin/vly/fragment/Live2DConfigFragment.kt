@@ -27,17 +27,15 @@ import java.util.concurrent.TimeUnit
 import java.util.zip.ZipFile
 
 
-/**
- * A simple [Fragment] subclass.
- */
+//Live2D 安装界面
 class Live2DConfigFragment : Fragment(), JniBridgeJava.FileGetter, IKeyPassthough {
-    companion object {
+    companion object { //默认画布大小
         const val defaultCanvasW = 1150
         const val defaultCanvasH = 1440
     }
 
-    lateinit var fileInstallCache: File
-    private val mRenderer = L2DRenderer()
+    lateinit var fileInstallCache: File //安装缓存
+    private val mRenderer = L2DRenderer() //Live2D 渲染器
     lateinit var zipFile: ZipFile
     val scheduledExecutorService = Executors.newScheduledThreadPool(1)
     var modelJSON = ""
@@ -45,7 +43,7 @@ class Live2DConfigFragment : Fragment(), JniBridgeJava.FileGetter, IKeyPassthoug
     private lateinit var model_y: SeekBar
     private lateinit var model_scale: SeekBar
     private lateinit var model_height: EditText
-    private val texture = SurfaceTexture(0).apply {
+    private val texture = SurfaceTexture(0).apply { //创建离屏渲染界面
         this.setDefaultBufferSize(defaultCanvasW, defaultCanvasH)
     }
 
@@ -53,7 +51,6 @@ class Live2DConfigFragment : Fragment(), JniBridgeJava.FileGetter, IKeyPassthoug
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         fileInstallCache = File(requireContext().externalCacheDir, "install.zip")
         val view = inflater.inflate(R.layout.fragment_live2_d_config, container, false)
         model_x = view.findViewById(R.id.sk_l2d_x)
@@ -87,11 +84,11 @@ class Live2DConfigFragment : Fragment(), JniBridgeJava.FileGetter, IKeyPassthoug
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
-        val path = requireArguments().getParcelable<Uri>("install")
-        val editUid = requireArguments().getLong("uid")
+        val path = requireArguments().getParcelable<Uri>("install") //获得安装模式
+        val editUid = requireArguments().getLong("uid") //获得 UID
         val isEdit = requireArguments().containsKey("uid")
         if (path == null) {
-            if (isEdit) {
+            if (isEdit) { //是否是编辑
                 setupEdit(view, File(requireContext().getExternalFilesDir(null), "$editUid.zip"))
                 Thread {
                     val model = AppDatabase.getInstance(requireContext())._l2dModelDao()
@@ -116,7 +113,7 @@ class Live2DConfigFragment : Fragment(), JniBridgeJava.FileGetter, IKeyPassthoug
                 ).show()
             }
         } else {
-            setupInstall(view, path)
+            setupInstall(view, path) //设置安装
             view.findViewById<Button>(R.id.btn_live2d_install).let {
                 it.setText(R.string.dialog_btn_install)
                 it.setOnClickListener { install() }
@@ -125,6 +122,7 @@ class Live2DConfigFragment : Fragment(), JniBridgeJava.FileGetter, IKeyPassthoug
         return view
     }
 
+    //设置编辑
     private fun setupEdit(view: View, path: File) {
         mRenderer.setActivity(requireActivity())
         mRenderer.setSurfaceTextureSize(defaultCanvasW, defaultCanvasH)
@@ -159,6 +157,7 @@ class Live2DConfigFragment : Fragment(), JniBridgeJava.FileGetter, IKeyPassthoug
         }
     }
 
+    //设置安装
     private fun setupInstall(view: View, path: Uri) {
         mRenderer.setActivity(requireActivity())
         mRenderer.setSurfaceTextureSize(defaultCanvasW, defaultCanvasH)
@@ -210,10 +209,12 @@ class Live2DConfigFragment : Fragment(), JniBridgeJava.FileGetter, IKeyPassthoug
         }
     }
 
+    //实现接口以将文件传输给 C++ 层
     override fun requestFile(path: String?): ByteArray {
         return zipFile.getInputStream(zipFile.getEntry(path)).readBytes()
     }
 
+    //编辑
     private fun edit(uid: Long) {
         if (model_height.text.isNullOrBlank()) {
             Toast.makeText(
@@ -239,6 +240,7 @@ class Live2DConfigFragment : Fragment(), JniBridgeJava.FileGetter, IKeyPassthoug
         }
     }
 
+    //安装
     private fun install() {
         if (model_height.text.isNullOrBlank()) {
             Toast.makeText(

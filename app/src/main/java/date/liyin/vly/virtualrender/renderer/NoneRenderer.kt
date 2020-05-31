@@ -10,8 +10,8 @@ import date.liyin.vly.ktutils.floatConfig
 import date.liyin.vly.ktutils.modelTransfromConfig
 import date.liyin.vly.virtualrender.PlaceMode
 import date.liyin.vly.virtualrender.VirtualRender
-
-class NoneRender(context: Context, uid: Long, loadEnded: () -> Unit) :
+//空渲染 不做任何事
+class NoneRenderer(context: Context, uid: Long, loadEnded: () -> Unit) :
     VirtualRender(context, uid, loadEnded) {
     override fun getPlaceMode(): PlaceMode =
         PlaceMode.HORIZONTAL_UPWARD_AND_VERTICAL_DIRECT

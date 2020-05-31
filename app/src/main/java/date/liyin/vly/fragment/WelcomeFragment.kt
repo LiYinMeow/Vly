@@ -31,9 +31,7 @@ import liyin.party.skyrecycleradapter.SmartRecyclerAdapter
 import java.util.*
 
 
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
+//欢迎界面
 class WelcomeFragment : Fragment() {
     lateinit var mAddModel: FloatingActionButton
     lateinit var mArSupport: TextView
@@ -50,7 +48,6 @@ class WelcomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_welcome, container, false)
     }
 
@@ -95,7 +92,7 @@ class WelcomeFragment : Fragment() {
             requireActivity(),
             RecyclerHelper.RecyclerViewLayoutMangerEnum.Linear_VERTICAL
         );
-        adapter = SmartRecyclerAdapter(requireActivity())
+        adapter = SmartRecyclerAdapter(requireActivity()) //使用 SmartRecyclerAdapter 自动生成
         recycler.adapter = adapter
         loadData()
 
@@ -107,6 +104,7 @@ class WelcomeFragment : Fragment() {
         maybeEnableArButton()
     }
 
+    //从数据库加载，详见 ROOM
     private fun loadData() {
         adapter.clear()
         Thread {
