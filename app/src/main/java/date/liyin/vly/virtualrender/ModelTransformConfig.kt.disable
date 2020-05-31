@@ -1,0 +1,15 @@
+package date.liyin.vly.virtualrender
+
+enum class ModelTransformConfig {
+    SCALE_MIN, SCALE_MAX, ROTATE, TRANSLATION, SCALE, FAKESHADOW;
+    companion object {
+        fun builder() : MutableMap<ModelTransformConfig, Any> = mutableMapOf(
+            Pair(TRANSLATION, false),
+            Pair(ROTATE, false),
+            Pair(SCALE, false),
+            Pair(SCALE_MIN, 0.5f),
+            Pair(SCALE_MAX, 2.0f),
+            Pair(FAKESHADOW, false)
+        )
+    }
+}

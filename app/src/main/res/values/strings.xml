@@ -1,0 +1,77 @@
+<resources>
+    <string name="app_name">Vly</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">Welcome</string>
+    <string name="next">Enter AR Mode</string>
+    <string name="status_arcore_ready">AR Ready</string>
+    <string name="status_arcore_support">Device support, please install ARCore.</string>
+    <string name="status_arcore_incompatible">AR Incompatible</string>
+    <string name="status_arcore_checking">Checking....</string>
+    <string name="ar_fragment_label">AR Room</string>
+    <string name="tab_avatar">Avatar</string>
+    <string name="tab_tools">Tools</string>
+    <string name="sw_boardcast">Boardcast</string>
+    <string name="sw_floor">Show floor</string>
+    <string name="btn_reset">Reset</string>
+    <string name="btn_remove_avatar">Remove Avatar</string>
+    <string name="btn_facial_expression">Facial Expression</string>
+    <string name="btn_action">Action</string>
+    <string name="key_record_start">Recording…</string>
+    <string name="key_record_stop">Record saved.</string>
+    <string name="key_captured">Picture saved.</string>
+    <string name="sw_allow_record">Allow record</string>
+    <string name="sw_allow_mic">Record Audio</string>
+    <string name="key_capture_failed">Can not save picture.</string>
+    <string name="key_capture_start">Capturing....</string>
+    <string name="dialog_select_action">Select action</string>
+    <string name="status_action_error">Action Error</string>
+    <string name="status_action_notselect">Action not select, Long press to select.</string>
+    <string name="status_action_nomodel">Avatar not placed.</string>
+    <string name="status_wait_load">Loading...</string>
+    <string name="sw_walkmode">Move Mode</string>
+    <string name="status_walk_notfound">Move animation not defined.</string>
+    <string name="iv_content_ar">AR Image</string>
+    <string name="dialog_select_face">Facial Expression Selection</string>
+    <string name="status_face_notselect">Expression not select, Long press to select.</string>
+    <string name="status_face_error">Facial Expression Error</string>
+    <string name="dialog_mode_selection">Mode Selection</string>
+    <string name="dialog_mode_pure3d">3D</string>
+    <string name="dialog_mode_live2d">Live2D</string>
+    <string name="dialog_mode_imagewall">ImageWall</string>
+    <string name="dialog_mode_imageplace">Place Image Spire</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="dddconfig">3D Config</string>
+    <string name="l2dconfig">Live2D Config</string>
+    <string name="globalconfig">Global Config</string>
+    <string name="application_not_expect">Not Expect Error</string>
+    <string name="install_l2d_duplicate_json_or_not_have">Zip file contains multiple model or doesn\'t contain any model</string>
+    <string name="dialog_install">Install Model</string>
+    <string name="dialog_install_msg">Model Name</string>
+    <string name="dialog_btn_install">Install</string>
+    <string name="dialog_btn_back">Back</string>
+    <string name="status_not_contain_necessary">Not contain necessary field</string>
+    <string name="cap_l2d_x">X</string>
+    <string name="cap_l2d_y">Y</string>
+    <string name="cap_l2d_scale">Scale</string>
+    <string name="cap_l2d_height">Height</string>
+    <string name="status_installed">Installed</string>
+    <string name="dialog_edit_model">Edit %s</string>
+    <string name="dialog_btn_edit">Edit</string>
+    <string name="dialog_btn_delete">Delete</string>
+    <string name="dialog_btn_confirm">Confirm</string>
+    <string name="dialog_btn_cancel">Cancel</string>
+    <string name="dialog_title_delete">Confirm delete %s ?</string>
+    <string name="status_deleted">%s deleted</string>
+    <string name="cap_3d_enable_animation">Enable Animation</string>
+    <string name="status_not_support_file">File not support</string>
+    <string name="status_internal_null">Internal Model doesn\'t exist</string>
+    <string name="dialog_internal_add">Add Internal Model?</string>
+    <string name="cap_3d_walkanimation">Walk Animation</string>
+    <string name="select_no_action">None</string>
+    <string name="cap_3d_walkspeed">Walk Speed</string>
+    <string name="cap_3d_baseanimation">Idle Animation</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+
+</resources>

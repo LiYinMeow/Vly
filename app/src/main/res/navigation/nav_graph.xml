@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/WelcomeFragment">
+
+    <fragment
+        android:id="@+id/WelcomeFragment"
+        android:name="date.liyin.vly.fragment.WelcomeFragment"
+        android:label="@string/first_fragment_label"
+        tools:layout="@layout/fragment_welcome">
+
+        <action
+            android:id="@+id/action_goto_ar"
+            app:destination="@id/ArFragment"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_goto_dddconfig"
+            app:destination="@id/DDDConfigFragment"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_goto_l2dconfig"
+            app:destination="@id/Live2DConfigFragment"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_goto_globalconfig"
+            app:destination="@id/GlobalConfigFragment"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/ArFragment"
+        android:name="date.liyin.vly.fragment.ArRoomFragment"
+        android:label="@string/ar_fragment_label"></fragment>
+
+    <fragment
+        android:id="@+id/DDDConfigFragment"
+        android:name="date.liyin.vly.fragment.DDDConfigFragment"
+        android:label="@string/dddconfig">
+        <action
+            android:id="@+id/action_goto_welcome"
+            app:destination="@id/WelcomeFragment"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/Live2DConfigFragment"
+        android:name="date.liyin.vly.fragment.Live2DConfigFragment"
+        android:label="@string/l2dconfig">
+        <action
+            android:id="@+id/action_goto_welcome"
+            app:destination="@id/WelcomeFragment"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/GlobalConfigFragment"
+        android:name="date.liyin.vly.fragment.ConfigFragment"
+        android:label="@string/globalconfig">
+        <action
+            android:id="@+id/action_goto_welcome"
+            app:destination="@id/WelcomeFragment"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+</navigation>

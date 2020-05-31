@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/floating_theme"
+    android:columnCount="6"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <ToggleButton
+        android:id="@+id/sw_boardcast"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_columnSpan="6"
+        android:layout_gravity="fill_horizontal"
+        android:layout_margin="8dp"
+        android:background="@drawable/swbutton_theme"
+        android:padding="12dp"
+        android:text="@string/sw_boardcast"
+        android:textColor="@color/sw_color"
+        android:textOff="@string/sw_boardcast"
+        android:textOn="@string/sw_boardcast"
+        android:visibility="gone" />
+
+    <ToggleButton
+        android:id="@+id/sw_floor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_columnSpan="6"
+        android:layout_gravity="fill_horizontal"
+        android:layout_margin="8dp"
+        android:background="@drawable/swbutton_theme"
+        android:checked="true"
+        android:padding="12dp"
+        android:text="@string/sw_floor"
+        android:textColor="@color/sw_color"
+        android:textOff="@string/sw_floor"
+        android:textOn="@string/sw_floor" />
+
+    <ToggleButton
+        android:id="@+id/sw_permission"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_columnSpan="6"
+        android:layout_gravity="fill_horizontal"
+        android:layout_margin="8dp"
+        android:background="@drawable/swbutton_theme"
+        android:padding="12dp"
+        android:text="@string/sw_allow_record"
+        android:textColor="@color/sw_color"
+        android:textOff="@string/sw_allow_record"
+        android:textOn="@string/sw_allow_record" />
+
+    <ToggleButton
+        android:id="@+id/sw_audio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_columnSpan="6"
+        android:layout_gravity="fill_horizontal"
+        android:layout_margin="8dp"
+        android:background="@drawable/swbutton_theme"
+        android:padding="12dp"
+        android:text="@string/sw_allow_mic"
+        android:textColor="@color/sw_color"
+        android:textOff="@string/sw_allow_mic"
+        android:textOn="@string/sw_allow_mic" />
+
+    <ToggleButton
+        android:id="@+id/sw_walkmode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_columnSpan="6"
+        android:layout_gravity="fill_horizontal"
+        android:layout_margin="8dp"
+        android:background="@drawable/swbutton_theme"
+        android:padding="12dp"
+        android:text="@string/sw_walkmode"
+        android:textColor="@color/sw_color"
+        android:textOff="@string/sw_walkmode"
+        android:textOn="@string/sw_walkmode" />
+
+    <Button
+        android:id="@+id/btn_face"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_columnSpan="6"
+        android:layout_gravity="fill_horizontal"
+        android:layout_margin="8dp"
+        android:background="@drawable/button_theme"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:padding="12dp"
+        android:text="@string/btn_facial_expression"
+        android:textColor="@color/grey_white_1000" />
+
+    <Button
+        android:id="@+id/btn_action"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_columnSpan="6"
+        android:layout_gravity="fill_horizontal"
+        android:layout_margin="8dp"
+        android:background="@drawable/button_theme"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:padding="12dp"
+        android:text="@string/btn_action"
+        android:textColor="@color/grey_white_1000" />
+
+    <Button
+        android:id="@+id/btn_remove"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_columnSpan="6"
+        android:layout_gravity="fill_horizontal"
+        android:layout_margin="8dp"
+        android:background="@drawable/button_theme"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:padding="12dp"
+        android:text="@string/btn_remove_avatar"
+        android:textColor="@color/grey_white_1000" />
+    <!--
+    <Button
+        android:id="@+id/btn_reset"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill_horizontal"
+        android:layout_margin="8dp"
+        android:layout_columnSpan="6"
+        android:background="@drawable/button_theme"
+        android:padding="12dp"
+        android:foreground="?attr/selectableItemBackground"
+        android:focusable="true"
+        android:clickable="true"
+        android:text="@string/btn_reset"
+        android:textColor="@color/grey_white_1000" />
+        -->
+</GridLayout>
+

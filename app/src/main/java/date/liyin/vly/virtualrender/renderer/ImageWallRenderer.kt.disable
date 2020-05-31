@@ -1,0 +1,80 @@
+package date.liyin.vly.virtualrender.renderer
+
+import android.content.Context
+import android.widget.ImageView
+import com.google.ar.core.Anchor
+import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.ArSceneView
+import com.google.ar.sceneform.FrameTime
+import com.google.ar.sceneform.rendering.FixedWidthViewSizer
+import com.google.ar.sceneform.rendering.Renderable
+import com.google.ar.sceneform.rendering.ViewRenderable
+import com.google.ar.sceneform.ux.TransformableNode
+import date.liyin.vly.R
+import date.liyin.vly.virtualrender.FloatingConfig
+import date.liyin.vly.virtualrender.ModelTransformConfig
+import date.liyin.vly.virtualrender.PlaceMode
+import date.liyin.vly.virtualrender.VirtualRender
+
+class ImageWallRenderer(context: Context, loadEnded: () -> Unit) : VirtualRender(context, loadEnded) {
+    private val image = R.drawable.killbettle
+    private lateinit var renderable : ViewRenderable
+    override fun getPlaceMode(): PlaceMode = PlaceMode.VERTICAL_ONLY_ROTATE
+    override fun getFloatingConfig(): Map<FloatingConfig, Boolean> =
+        FloatingConfig.builder().apply {
+            this[FloatingConfig.FACE] = false
+            this[FloatingConfig.ACTION] = false
+        }.toMap()
+
+    override fun getModelTransformConfig(): Map<ModelTransformConfig, Any> =
+        ModelTransformConfig.builder().apply {
+            this[ModelTransformConfig.ROTATE] = false
+            this[ModelTransformConfig.SCALE] = true
+            this[ModelTransformConfig.TRANSLATION] = true
+            this[ModelTransformConfig.SCALE_MIN] = 0.05f
+            this[ModelTransformConfig.SCALE_MAX] = 5f
+        }.toMap()
+
+    override fun loadModel(func : (Renderable) -> Unit) {
+        ViewRenderable.builder()
+            .setView(context, R.layout.ar_imageview)
+            .setSizer(FixedWidthViewSizer(1f))
+            .build()
+            .thenAccept { model ->
+                model.isShadowCaster = false
+                model.isShadowReceiver = false
+                model.view.findViewById<ImageView>(R.id.ar_iv).apply {
+                    this.setImageResource(image)
+                    this.rotation = -90f
+                }
+                func(model)
+                this.renderable = model
+                loadEnded()
+            }
+            .exceptionally {
+                Exception(it).printStackTrace()
+                null
+            }
+    }
+
+    override fun getAnimationList(): Set<String> {
+        return emptySet()
+    }
+
+    override fun hasAnimation(animationName: String): Boolean {
+        return false
+    }
+
+    override fun playAnimation(
+        animationName: String,
+        animationDuration: Long?,
+        repeatCount: Int?,
+        doOnEnd: (() -> Unit)?
+    ) { }
+
+    override fun setModelToAnimationStartOrEnd() { }
+
+    override fun stopLastAnimation() { }
+
+    override fun onUpdate(arSceneView: ArSceneView, frameTime: FrameTime?, anchor: Anchor?, anchorNode: AnchorNode?, nodeTransformableNode: TransformableNode?, fakeShadow: TransformableNode?) {}
+}

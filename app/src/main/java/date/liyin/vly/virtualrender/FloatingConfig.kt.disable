@@ -1,0 +1,12 @@
+package date.liyin.vly.virtualrender
+
+enum class FloatingConfig {
+    MOVE, FACE, ACTION;
+    companion object {
+        fun builder() : MutableMap<FloatingConfig, Boolean> = mutableMapOf(
+            Pair(MOVE, false),
+            Pair(FACE, false),
+            Pair(ACTION, false)
+        )
+    }
+}
