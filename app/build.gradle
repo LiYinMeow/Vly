@@ -20,7 +20,7 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-
+        ndkVersion "21.3.6528147"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             ndk {
@@ -28,11 +28,19 @@ android {
             }
         }
     }
-
+    signingConfigs {
+        release {
+            storeFile file("../vlyautobuild.jks")
+            storePassword 'vlyautobuild'
+            keyAlias 'vlyautobuild'
+            keyPassword 'vlyautobuild'
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 

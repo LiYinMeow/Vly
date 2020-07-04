@@ -20,7 +20,7 @@ Unlike other program, this project can render Live2D Avatar using Offscreen Open
 
 ### Live2D Fake Shadow 伪造 Live2D 阴影
 Beacuse Live2D is 2D picture transform, so it doesn't support 3D light and normal, so this project will render a fake shadow below your model to make your model assimilate into environments.  
-由于 Live2D 为二维图像变换，所以其不支持三维光照和法线，所以这个项目在您的模型下方渲染了一个虚假的影子，使您的模型融入周围的环境中。
+由于 Live2D 为二维ehu图像变换，所以其不支持三维光照和法线，所以这个项目在您的模型下方渲染了一个虚假的影子，使您的模型融入周围的环境中。
 
 ## Support Platfrom 支持的平台
 Any android phone which can run ARCore.  
@@ -31,12 +31,12 @@ Any android phone which can run ARCore.
 
 ## Build 构建
 First, you need download Live2D SDK and decompress to project root(`Framework` and `Core` directory is needed).  
-Just clone https://github.com/Live2D/CubismNativeSamples and copy `Framework` `Core` and `Samples/OpenGL` to project root.  
+Just download https://www.live2d.com/en/download/cubism-sdk/download-native/ and copy `Framework` `Core` and `Samples/OpenGL` to project root.  
 Then you can build it as normal.  
 This repo also contains CI support, you can fork this repo and enable CI for this to auto build Vly.
 
 首先您需要下载 Live2D SDK 并将其解压缩到项目根目录（需要 `Framework` 和 `Core` 目录）。  
-只需要克隆 https://github.com/Live2D/CubismNativeSamples 项目并复制 `Framework` `Core` 和 `Samples/OpenGL` 文件夹到项目根目录。  
+只需要下载 https://www.live2d.com/en/download/cubism-sdk/download-native/ 并复制 `Framework` `Core` 和 `Samples/OpenGL` 文件夹到项目根目录。  
 然后您就可以像其他软件一样编译它。  
 这个仓库同时具有 CI 支持，您可以 fork 这个仓库，然后启动 CI 来自动编译 Vly。
 
@@ -56,7 +56,6 @@ According to Live2D License, this program is an "「拡張性アプリケーシ�
 You only need is fork this repo and active CI for this repo. Wait for CI to build with you.  
 These CI system is supported by project:  
  * Github Action
- * TravisCI
 
 Why this can bypass license issue?   
 Beacuse, if you fork this repo, you legally own these code, MIT open-source license give you this power. According to Live2D Lisense, you can make program to your self, so CI build these code (you own these code by clicking `fork` button) only for you.  
@@ -66,7 +65,6 @@ Remember, if you give your apk file to other, you need contact Live2D Company to
 您只需要 fork 这个仓库，然后激活持续集成即可。等待持续集成系统为您编译。  
 这些持续集成系统受到此项目支持：  
  * Github Action
- * TravisCI
 
 为什么这可以绕过协议问题？  
 因为如果您 fork 这个仓库，您在法律上拥有了这些代码，MIT 开源协议提供给您了这个权力。根据 Live2D 协议，您可以为您自己制作程序，所以持续集成仅为您启动了编译工作。（您在点击 `fork` 按钮时拥有了这些代码）  
